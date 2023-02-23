@@ -156,6 +156,8 @@ namespace dnlib.DotNet {
 		/// <inheritdoc/>
 		public bool HasCustomDebugInfos => CustomDebugInfos.Count > 0;
 
+		public virtual System.Reflection.Module ReflectionModule { get; set; }
+
 		/// <summary>
 		/// Gets all custom debug infos
 		/// </summary>

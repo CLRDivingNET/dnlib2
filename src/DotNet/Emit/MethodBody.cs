@@ -100,6 +100,15 @@ namespace dnlib.DotNet.Emit {
 		}
 
 		/// <summary>
+		/// CilBody CodeSize
+		/// IL byte[]
+		/// </summary>
+		public uint CodeSize {
+			get => MetadataBodySize - 1;
+			set => MetadataBodySize = value;
+		}
+
+		/// <summary>
 		/// Gets/sets the locals metadata token
 		/// </summary>
 		public uint LocalVarSigTok {

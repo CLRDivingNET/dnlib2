@@ -1,3 +1,5 @@
+using Examples;
+
 namespace dnlib.Examples {
 	class Program {
 		static void Main(string[] args) {
@@ -8,7 +10,8 @@ namespace dnlib.Examples {
 // 			Example4.Run();
 // 			Example5.Run();
 // 			Example6.Run();
-			Example7.Run();
+//			Example7.Run();
+			Example8.Run();
 		}
 	}
 }

@@ -984,6 +984,10 @@ namespace dnlib.DotNet {
 
 		/// <inheritdoc/>
 		public override string ToString() => FullName;
+
+		public virtual byte[] GetILAsByteArray(ModuleDef module) {
+			return module.ReflectionModule.ResolveMethod(0x06000000 + (int)Rid).GetMethodBody().GetILAsByteArray();
+		}
 	}
 
 	/// <summary>

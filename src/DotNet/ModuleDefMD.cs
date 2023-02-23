@@ -18,6 +18,7 @@ using dnlib.W32Resources;
 using DNW = dnlib.DotNet.Writer;
 using dnlib.DotNet.Pdb.Symbols;
 using System.Runtime.CompilerServices;
+//using System.Reflection;
 
 namespace dnlib.DotNet {
 	/// <summary>
@@ -102,6 +103,8 @@ namespace dnlib.DotNet {
 		/// Returns the #US stream
 		/// </summary>
 		public USStream USStream => metadata.USStream;
+
+		public override System.Reflection.Module ReflectionModule { get; set; }
 
 		/// <inheritdoc/>
 		protected override void InitializeTypes() {
@@ -227,8 +230,10 @@ namespace dnlib.DotNet {
 		/// <returns>A new <see cref="ModuleDefMD"/> instance</returns>
 		public static ModuleDefMD Load(System.Reflection.Module mod, ModuleCreationOptions options, ImageLayout imageLayout) {
 			var addr = GetModuleHandle(mod);
-			if (addr != IntPtr.Zero && addr != new IntPtr(-1))
-				return Load(addr, options, imageLayout);
+			if (addr != IntPtr.Zero && addr != new IntPtr(-1)) {
+				return Load(addr, options, imageLayout,mod);
+			}
+
 			var location = mod.FullyQualifiedName;
 			if (string.IsNullOrEmpty(location) || location[0] == '<')
 				throw new InvalidOperationException($"Module {mod} has no HINSTANCE");
@@ -297,7 +302,7 @@ namespace dnlib.DotNet {
 		/// <param name="options">Module creation options or <c>null</c></param>
 		/// <param name="imageLayout">Image layout of the file in memory</param>
 		/// <returns>A new <see cref="ModuleDefMD"/> instance</returns>
-		public static ModuleDefMD Load(IntPtr addr, ModuleCreationOptions options, ImageLayout imageLayout) => Load(MetadataFactory.Load(addr, imageLayout, options?.Runtime ?? CLRRuntimeReaderKind.CLR), options);
+		public static ModuleDefMD Load(IntPtr addr, ModuleCreationOptions options, ImageLayout imageLayout, System.Reflection.Module mod = null) => Load(MetadataFactory.Load(addr, imageLayout, options?.Runtime ?? CLRRuntimeReaderKind.CLR), options,mod);
 
 		/// <summary>
 		/// Creates a <see cref="ModuleDefMD"/> instance from a stream
@@ -347,7 +352,7 @@ namespace dnlib.DotNet {
 		/// <param name="metadata">The metadata</param>
 		/// <param name="options">Module creation options or <c>null</c></param>
 		/// <returns>A new <see cref="ModuleDefMD"/> instance that now owns <paramref name="metadata"/></returns>
-		internal static ModuleDefMD Load(MetadataBase metadata, ModuleCreationOptions options) => new ModuleDefMD(metadata, options);
+		internal static ModuleDefMD Load(MetadataBase metadata, ModuleCreationOptions options, System.Reflection.Module mod = null) => new ModuleDefMD(metadata, options,mod);
 
 		/// <summary>
 		/// Constructor
@@ -355,12 +360,16 @@ namespace dnlib.DotNet {
 		/// <param name="metadata">The metadata</param>
 		/// <param name="options">Module creation options or <c>null</c></param>
 		/// <exception cref="ArgumentNullException">If <paramref name="metadata"/> is <c>null</c></exception>
-		ModuleDefMD(MetadataBase metadata, ModuleCreationOptions options)
+		ModuleDefMD(MetadataBase metadata, ModuleCreationOptions options, System.Reflection.Module mod = null)
 			: base(null, 1) {
 #if DEBUG
 			if (metadata is null)
 				throw new ArgumentNullException(nameof(metadata));
 #endif
+			if(mod is not null) {
+				ReflectionModule = mod;
+			}
+
 			if (options is null)
 				options = ModuleCreationOptions.Default;
 			this.metadata = metadata;

@@ -530,6 +530,7 @@ namespace dnlib.DotNet.Emit {
 			bool initLocals = flags == 2 || (flags & 0x10) != 0;
 			var cilBody = new CilBody(initLocals, instructions, exceptionHandlers, locals);
 			cilBody.HeaderSize = headerSize;
+			cilBody.CodeSize = 0;
 			cilBody.MaxStack = maxStack;
 			cilBody.LocalVarSigTok = localVarSigTok;
 			cilBody.MetadataBodySize = totalBodySize;
